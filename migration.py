@@ -5,7 +5,14 @@ import pymongo
 import collections
 from bokeh.io import show, output_file
 from bokeh.plotting import figure
+from bokeh.models import Select
+from bokeh.layouts import row, column
+from bokeh.io import curdoc
 from datetime import datetime
+from bokeh.io import output_file, show
+from bokeh.layouts import widgetbox
+from bokeh.models.widgets import Select
+from bokeh.models import CustomJS
 
 
 def connect():
@@ -222,7 +229,7 @@ def migrate(cursor,mongo_client):
     insert_bet_percentage(cursor, mongo_client, leagues_map, match_map, bet_type_map)
 
 
-def get_number_of_bets_corelated_to_sport_id_dict():
+def get_number_of_bets_correlated_to_sport_id_dict():
     query = [{'$lookup':{'from':'matches','localField':'Match','foreignField':'_id','as':'match'}},
              {'$lookup':{'from':'leagues','localField':'match.Liga','foreignField':'_id','as':'Liga'}}]
     joined_bet_match_league = mongo_client.bets.aggregate(query)
@@ -236,7 +243,7 @@ def get_number_of_bets_corelated_to_sport_id_dict():
 
 
 def visualize_sports_bets():
-    b_dict = get_number_of_bets_corelated_to_sport_id_dict()
+    b_dict = get_number_of_bets_correlated_to_sport_id_dict()
     output_file("bets_sports.html")
     sports = {21:'Rokomet',
               28:'Plavanje',
@@ -245,9 +252,9 @@ def visualize_sports_bets():
               8:'Floorball',
               29:'Tek',
               27:'Nogomet',
-              10:'Mikado',
-              20:'Tornado',
-              25:'Cokolado',
+              10:'Snooker',
+              20:'Skoki',
+              25:'Smučanje',
               24:'Pikado',
               30:'Curling',
               6:'Biljard'}
@@ -278,34 +285,84 @@ def get_days_profit_dict():
             dict_day_profit[key_date] = quota*single_bet_investment if status == "W" else -single_bet_investment
         else:
             dict_day_profit[key_date] = dict_day_profit[key_date] + quota*single_bet_investment if status == "W" else dict_day_profit[key_date] - single_bet_investment
-    #for k,v in dict_day_profit.items():
-    #    print(k + " : " + str(v))
     return dict_day_profit
 
 def visualize_day_profit():
     p_dict = get_days_profit_dict()
     output_file("days_profits.html")
     date_time_days = [datetime.strptime(k, '%m-%d-%Y') for k in p_dict.keys()]
-
-
-    p = figure(x_axis_type='datetime', plot_height=350, title="Dobiček na posamezen dan",
-               toolbar_location=None, tools="")
-    #p.line(date_time_days, list(p_dict.values()))
-
-    p.vbar(x=date_time_days, top=list(p_dict.values()), width=0.9)
+    p = figure(x_axis_type='datetime', plot_height=550, plot_width=950, title="Dobiček na posamezen dan",
+               toolbar_location="right", )
+    p.vbar(x=date_time_days, top=list(p_dict.values()), width=3)
     p.xgrid.grid_line_color = None
     p.y_range.start = -100
-
     show(p)
+
+def get_sport_type_bets():
+    query = [{'$lookup':{'from':'matches','localField':'Match','foreignField':'_id','as':'match'}},
+             {'$lookup':{'from':'leagues','localField':'match.Liga','foreignField':'_id','as':'Liga'}},
+             {'$lookup':{'from':'bet_types','localField':'BetType','foreignField':'_id','as':'bet_type'}}
+             ]
+    joined_bet_match_league_type = mongo_client.bets.aggregate(query)
+    dict_sport = {}
+    for row in joined_bet_match_league_type:
+        sport_id = row["Liga"][0]["Sport"]
+        type     = row["bet_type"][0]["Type1"]
+
+        if sport_id not in dict_sport:
+            dict_sport[sport_id] = {}
+        else:
+            if type not in dict_sport[sport_id]:
+                dict_sport[sport_id][type] = 1
+            else:
+                dict_sport[sport_id][type] = dict_sport[sport_id][type] + 1
+    return  dict_sport
+    #for k,v in dict_sport.items():
+    #    print(str(k) + " : " + str(v))
+    #21 : {2: 60, 12: 996, 8: 53, 3: 31, 9: 1}
+    #28 : {9: 3, 3: 5, 12: 6}
+    #11 : {9: 18, 3: 164, 12: 4055, 2: 6, 8: 12}
+    #15 : {9: 1}
+    #8 : {9: 9}
+    #29 : {9: 7}
+    #27 : {12: 9225, 2: 144, 6: 4, 3: 60, 7: 7, 8: 190, 4: 11, 10: 3, 9: 1}
+    #10 : {12: 395, 3: 2}
+    #20 : {12: 290, 3: 14, 2: 1, 8: 1}
+    #25 : {2: 2, 12: 108, 3: 5, 8: 2}
+    #24 : {8: 2, 12: 81, 3: 3}
+    #30 : {}
+    #6 : {12: 9}
+
+def visualize_sport_type(sport_id):
+    p_dict = get_sport_type_bets()
+    output_file("bet_types.html")
+    bettype_number = p_dict[sport_id]
+    p = figure(x_range=[str(k) for k in bettype_number.keys()], plot_height=350, title="Tip stave na šport: " + str(sport_id),
+               toolbar_location="right", )
+    p.vbar(x=[str(k) for k in bettype_number.keys()],top=list(bettype_number.values()), width=0.9)
+    p.xgrid.grid_line_color = None
+    p.y_range.start = 0
+    #show(p)
+
+    city_select = Select(value=str(sport_id), title='Sport id', options=[str(k) for k in p_dict.keys()])
+
+    def update_plot(attrname, old, new):
+        city = city_select.value
+        p = figure(x_range=[str(k) for k in bettype_number.keys()], plot_height=350, title="Tip stave na šport: " + str(sport_id),
+               toolbar_location="right", )
+        p.vbar(x=[str(k) for k in bettype_number.keys()],top=list(bettype_number.values()), width=0.9)
+
+    #city_select.on_change('value', update_plot)
+    controls = column(city_select)
+    show(row(p, controls))
+
 
 
 
 if __name__ == '__main__':
-
     #cursor = connect()
     mongo_client = connect_mongo()
-    visualize_day_profit()
-
+    visualize_sport_type(21)
 
 
 
