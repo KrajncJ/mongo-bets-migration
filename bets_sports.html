@@ -1,0 +1,85 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    
+      <meta charset="utf-8">
+      <title>Bokeh Plot</title>
+      
+      
+        
+          
+        <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-1.0.4.min.css" type="text/css" />
+        
+        
+          
+        <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-1.0.4.min.js"></script>
+        <script type="text/javascript">
+            Bokeh.set_log_level("info");
+        </script>
+        
+      
+      
+    
+  </head>
+  
+  
+  <body>
+    
+      
+        
+          
+          
+            
+              <div class="bk-root" id="d6e690e5-9ee4-48ad-9dbb-e51384d28569" data-root-id="1002"></div>
+            
+          
+        
+      
+      
+        <script type="application/json" id="1083">
+          {"fbc9dd8e-29ec-4c02-b4f9-eaaed52ff697":{"roots":{"references":[{"attributes":{},"id":"1008","type":"CategoricalScale"},{"attributes":{"callback":null,"start":0},"id":"1006","type":"DataRange1d"},{"attributes":{},"id":"1028","type":"CategoricalTickFormatter"},{"attributes":{"active_drag":"auto","active_inspect":"auto","active_multi":null,"active_scroll":"auto","active_tap":"auto"},"id":"1021","type":"Toolbar"},{"attributes":{},"id":"1010","type":"LinearScale"},{"attributes":{},"id":"1030","type":"BasicTickFormatter"},{"attributes":{"plot":null,"text":"\u0160tevilo stav na posamezen \u0161port"},"id":"1001","type":"Title"},{"attributes":{"formatter":{"id":"1028","type":"CategoricalTickFormatter"},"plot":{"id":"1002","subtype":"Figure","type":"Plot"},"ticker":{"id":"1013","type":"CategoricalTicker"}},"id":"1012","type":"CategoricalAxis"},{"attributes":{"callback":null,"factors":["Rokomet","Plavanje","Ko\u0161arka","\u0160ah","Floorball","Tek","Nogomet","Mikado","Tornado","Cokolado","Pikado","Curling","Biljard"]},"id":"1004","type":"FactorRange"},{"attributes":{},"id":"1032","type":"UnionRenderers"},{"attributes":{"data_source":{"id":"1022","type":"ColumnDataSource"},"glyph":{"id":"1023","type":"VBar"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1024","type":"VBar"},"selection_glyph":null,"view":{"id":"1026","type":"CDSView"}},"id":"1025","type":"GlyphRenderer"},{"attributes":{},"id":"1013","type":"CategoricalTicker"},{"attributes":{},"id":"1033","type":"Selection"},{"attributes":{"grid_line_color":{"value":null},"plot":{"id":"1002","subtype":"Figure","type":"Plot"},"ticker":{"id":"1013","type":"CategoricalTicker"}},"id":"1015","type":"Grid"},{"attributes":{"callback":null,"data":{"top":[1142,15,4256,2,10,8,9646,398,307,118,87,1,10],"x":["Rokomet","Plavanje","Ko\u0161arka","\u0160ah","Floorball","Tek","Nogomet","Mikado","Tornado","Cokolado","Pikado","Curling","Biljard"]},"selected":{"id":"1033","type":"Selection"},"selection_policy":{"id":"1032","type":"UnionRenderers"}},"id":"1022","type":"ColumnDataSource"},{"attributes":{"formatter":{"id":"1030","type":"BasicTickFormatter"},"plot":{"id":"1002","subtype":"Figure","type":"Plot"},"ticker":{"id":"1017","type":"BasicTicker"}},"id":"1016","type":"LinearAxis"},{"attributes":{"source":{"id":"1022","type":"ColumnDataSource"}},"id":"1026","type":"CDSView"},{"attributes":{},"id":"1017","type":"BasicTicker"},{"attributes":{"fill_color":{"value":"#1f77b4"},"line_color":{"value":"#1f77b4"},"top":{"field":"top"},"width":{"value":0.9},"x":{"field":"x"}},"id":"1023","type":"VBar"},{"attributes":{"dimension":1,"plot":{"id":"1002","subtype":"Figure","type":"Plot"},"ticker":{"id":"1017","type":"BasicTicker"}},"id":"1020","type":"Grid"},{"attributes":{"below":[{"id":"1012","type":"CategoricalAxis"}],"left":[{"id":"1016","type":"LinearAxis"}],"plot_height":350,"renderers":[{"id":"1012","type":"CategoricalAxis"},{"id":"1015","type":"Grid"},{"id":"1016","type":"LinearAxis"},{"id":"1020","type":"Grid"},{"id":"1025","type":"GlyphRenderer"}],"title":{"id":"1001","type":"Title"},"toolbar":{"id":"1021","type":"Toolbar"},"toolbar_location":null,"x_range":{"id":"1004","type":"FactorRange"},"x_scale":{"id":"1008","type":"CategoricalScale"},"y_range":{"id":"1006","type":"DataRange1d"},"y_scale":{"id":"1010","type":"LinearScale"}},"id":"1002","subtype":"Figure","type":"Plot"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#1f77b4"},"line_alpha":{"value":0.1},"line_color":{"value":"#1f77b4"},"top":{"field":"top"},"width":{"value":0.9},"x":{"field":"x"}},"id":"1024","type":"VBar"}],"root_ids":["1002"]},"title":"Bokeh Application","version":"1.0.4"}}
+        </script>
+        <script type="text/javascript">
+          (function() {
+            var fn = function() {
+              Bokeh.safely(function() {
+                (function(root) {
+                  function embed_document(root) {
+                    
+                  var docs_json = document.getElementById('1083').textContent;
+                  var render_items = [{"docid":"fbc9dd8e-29ec-4c02-b4f9-eaaed52ff697","roots":{"1002":"d6e690e5-9ee4-48ad-9dbb-e51384d28569"}}];
+                  root.Bokeh.embed.embed_items(docs_json, render_items);
+                
+                  }
+                  if (root.Bokeh !== undefined) {
+                    embed_document(root);
+                  } else {
+                    var attempts = 0;
+                    var timer = setInterval(function(root) {
+                      if (root.Bokeh !== undefined) {
+                        embed_document(root);
+                        clearInterval(timer);
+                      }
+                      attempts++;
+                      if (attempts > 100) {
+                        console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                        clearInterval(timer);
+                      }
+                    }, 10, root)
+                  }
+                })(window);
+              });
+            };
+            if (document.readyState != "loading") fn();
+            else document.addEventListener("DOMContentLoaded", fn);
+          })();
+        </script>
+    
+  </body>
+  
+</html>
