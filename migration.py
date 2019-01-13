@@ -343,17 +343,14 @@ def visualize_sport_type(sport_id):
     p.xgrid.grid_line_color = None
     p.y_range.start = 0
     #show(p)
-
-    city_select = Select(value=str(sport_id), title='Sport id', options=[str(k) for k in p_dict.keys()])
-
+    sport_select = Select(value=str(sport_id), title='Sport id', options=[str(k) for k in p_dict.keys()])
     def update_plot(attrname, old, new):
-        city = city_select.value
+        sport = sport_select.value
         p = figure(x_range=[str(k) for k in bettype_number.keys()], plot_height=350, title="Tip stave na šport: " + str(sport_id),
                toolbar_location="right", )
         p.vbar(x=[str(k) for k in bettype_number.keys()],top=list(bettype_number.values()), width=0.9)
-
     #city_select.on_change('value', update_plot)
-    controls = column(city_select)
+    controls = column(sport_select)
     show(row(p, controls))
 
 
