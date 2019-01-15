@@ -354,14 +354,41 @@ def visualize_sport_type(sport_id):
     show(row(p, controls))
 
 
+def get_overall_bet_results_dict():
+    bets = mongo_client.bets.find()
+    bets_results_dict = {}
+    for i in bets:
+        if i['Status'] not in bets_results_dict:
+            bets_results_dict[i['Status']] = 1
+        else:
+            bets_results_dict[i['Status']] = bets_results_dict[i['Status']]  + 1
+    #for k,v in bets_results_dict.items():
+    #    print(str(k) + " : " + str(v))
+    return bets_results_dict
+
+def visualize_overall_results():
+    p_dict = get_overall_bet_results_dict()
+    output_file("overall_results.html")
+    result_options = list(p_dict.keys())
+    p = figure(x_range=result_options, plot_height=550, plot_width=950, title="Vsesplošni rezultati stav")
+    p.vbar(x=result_options, top=list(p_dict.values()), width=0.9)
+    p.xgrid.grid_line_color = None
+    p.y_range.start = -100
+    show(p)
+
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
     #cursor = connect()
     mongo_client = connect_mongo()
-    visualize_sport_type(21)
-
-
+    visualize_overall_results()
 
 
 
