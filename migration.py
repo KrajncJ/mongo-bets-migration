@@ -234,7 +234,12 @@ def get_number_of_bets_correlated_to_sport_id_dict():
              {'$lookup':{'from':'leagues','localField':'match.Liga','foreignField':'_id','as':'Liga'}}]
     joined_bet_match_league = mongo_client.bets.aggregate(query)
     dict_sport_bets = {}
+    count = 0
+    print('In method')
     for i in joined_bet_match_league:
+        count += 1
+        if (count % 2000 == 0):
+            print(count)
         if not i['Liga'][0]['Sport'] in dict_sport_bets:
             dict_sport_bets[i['Liga'][0]['Sport']] = 1
         else:
@@ -245,9 +250,9 @@ def get_number_of_bets_correlated_to_sport_id_dict():
 def visualize_sports_bets():
     b_dict = get_number_of_bets_correlated_to_sport_id_dict()
     output_file("bets_sports.html")
-    sports = {21:'Rokomet',
+    sports = {21:'Hokej',
               28:'Plavanje',
-              11:'Košarka',
+              11:'Basebal',
               15:'Šah',
               8:'Floorball',
               29:'Tek',
@@ -259,9 +264,9 @@ def visualize_sports_bets():
               30:'Curling',
               6:'Biljard'}
 
-    p = figure(x_range=list(sports.values()), plot_height=350, title="Število stav na posamezen šport",
+    p = figure(x_range=[str(k) for k in b_dict.keys()], plot_height=350, title="Število stav na posamezen šport",
                toolbar_location=None, tools="")
-    p.vbar(x=list(sports.values()), top=list(b_dict.values()), width=0.9)
+    p.vbar(x=[str(k) for k in b_dict.keys()], top=list(b_dict.values()), width=0.9)
     p.xgrid.grid_line_color = None
     p.y_range.start = 0
     show(p)
@@ -273,18 +278,24 @@ def get_days_profit_dict():
     joined_bet_match_league = mongo_client.bets.aggregate(query)
     dict_day_profit = {}
     single_bet_investment = 1
+    count = 0
     for row in joined_bet_match_league:
+        count += 1
+        if (count % 2000 == 0):
+            print(count)
         status = row["Status"]
         quota  = row["PickedQuota"]
         bet_date = str(row['match'][0]['Date'])
+        if (bet_date == 'None'):
+            continue
         datetime_object = datetime.strptime(bet_date, '%Y-%m-%d %H:%M:%S')
         key_date = '{:%m-%d-%Y}'.format(datetime_object)
         if datetime_object.year ==  datetime.strptime('2018', '%Y').year:
             continue
         if key_date not in dict_day_profit:
-            dict_day_profit[key_date] = quota*single_bet_investment if status == "W" else -single_bet_investment
+            dict_day_profit[key_date] = (quota*single_bet_investment)-single_bet_investment if status == "W" else -single_bet_investment
         else:
-            dict_day_profit[key_date] = dict_day_profit[key_date] + quota*single_bet_investment if status == "W" else dict_day_profit[key_date] - single_bet_investment
+            dict_day_profit[key_date] = dict_day_profit[key_date] + (quota*single_bet_investment)-single_bet_investment if status == "W" else dict_day_profit[key_date] - single_bet_investment
     return dict_day_profit
 
 def visualize_day_profit():
@@ -305,7 +316,11 @@ def get_sport_type_bets():
              ]
     joined_bet_match_league_type = mongo_client.bets.aggregate(query)
     dict_sport = {}
+    count = 0
     for row in joined_bet_match_league_type:
+        count += 1
+        if (count % 2000 == 0):
+            print(count)
         sport_id = row["Liga"][0]["Sport"]
         type     = row["bet_type"][0]["Type1"]
 
@@ -388,8 +403,10 @@ def visualize_overall_results():
 if __name__ == '__main__':
     #cursor = connect()
     mongo_client = connect_mongo()
-    visualize_overall_results()
-
+#    visualize_overall_results()
+  #  visualize_day_profit()
+    #visualize_sports_bets()
+    visualize_sport_type(27)
 
 
 
