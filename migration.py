@@ -14,6 +14,48 @@ from bokeh.layouts import widgetbox
 from bokeh.models.widgets import Select
 from bokeh.models import CustomJS
 
+sports = {
+        21:'Hokej',
+        28:'Tenis',
+        11:'Košarka',
+        15:'Kriket',
+        8:'Badminton',
+        29:'Odbojka',
+        27:'Nogomet',
+        10:'Baseball',
+        20:'Nogomet Ž',
+        25:'Rugby',
+        24:'Avstralski rugby',
+        30:'Water polo',
+        6:'Ameriški nogomet',
+        12:'Nogomet na mivki',
+        9:'Bandy',
+        13:'Odbojka na mivki',
+        7:'Avstralski nogomet',
+        19: 'Futsal',
+        16:'Pikado',
+        26:'Snooker',
+        23:'Pesäpallo',
+        18:'Hokej',
+        17:'e-sports',
+        14:'Boks',
+        22: 'UFC'
+    }
+bet_types_def = {
+    1:'Winner',
+    2:'1X2',
+    3:'AH',
+    4:'BTS',
+    5:'CS',
+    6:'DC',
+    7:'DNB',
+    8:'EH',
+    9:'H/A',
+    10:'HT/FT',
+    11:'O/E',
+    12:'O/U',
+    13:'TQ'
+}
 
 def connect():
     # Specifying the ODBC driver, server name, database, etc. directly
@@ -247,27 +289,15 @@ def get_number_of_bets_correlated_to_sport_id_dict():
     return dict_sport_bets
 
 
+
 def visualize_sports_bets():
     b_dict = get_number_of_bets_correlated_to_sport_id_dict()
     output_file("bets_sports.html")
-    sports = {21:'Hokej',
-              28:'Plavanje',
-              11:'Basebal',
-              15:'Šah',
-              8:'Floorball',
-              29:'Tek',
-              27:'Nogomet',
-              10:'Snooker',
-              20:'Skoki',
-              25:'Smučanje',
-              24:'Pikado',
-              30:'Curling',
-              6:'Biljard'}
-
-    p = figure(x_range=[str(k) for k in b_dict.keys()], plot_height=350, title="Število stav na posamezen šport",
+    p = figure(x_range=[str(sports[k]) for k in b_dict.keys()], plot_height=350, title="Število stav na posamezen šport",
                toolbar_location=None, tools="")
-    p.vbar(x=[str(k) for k in b_dict.keys()], top=list(b_dict.values()), width=0.9)
+    p.vbar(x=[str(sports[k]) for k in b_dict.keys()], top=list(b_dict.values()), width=0.9)
     p.xgrid.grid_line_color = None
+    p.xaxis.major_label_orientation = "vertical"
     p.y_range.start = 0
     show(p)
 
@@ -290,8 +320,8 @@ def get_days_profit_dict():
             continue
         datetime_object = datetime.strptime(bet_date, '%Y-%m-%d %H:%M:%S')
         key_date = '{:%m-%d-%Y}'.format(datetime_object)
-        if datetime_object.year ==  datetime.strptime('2018', '%Y').year:
-            continue
+        #if datetime_object.year ==  datetime.strptime('2018', '%Y').year:
+        #    continue
         if key_date not in dict_day_profit:
             dict_day_profit[key_date] = (quota*single_bet_investment)-single_bet_investment if status == "W" else -single_bet_investment
         else:
@@ -352,19 +382,12 @@ def visualize_sport_type(sport_id):
     p_dict = get_sport_type_bets()
     output_file("bet_types.html")
     bettype_number = p_dict[sport_id]
-    p = figure(x_range=[str(k) for k in bettype_number.keys()], plot_height=350, title="Tip stave na šport: " + str(sport_id),
+    p = figure(x_range=[str(bet_types_def[k]) for k in bettype_number.keys()], plot_height=350, title="Tip stave na šport: " + str(sports[sport_id]),
                toolbar_location="right", )
-    p.vbar(x=[str(k) for k in bettype_number.keys()],top=list(bettype_number.values()), width=0.9)
+    p.vbar(x=[str(bet_types_def[k]) for k in bettype_number.keys()],top=list(bettype_number.values()), width=0.9)
     p.xgrid.grid_line_color = None
     p.y_range.start = 0
-    #show(p)
-    sport_select = Select(value=str(sport_id), title='Sport id', options=[str(k) for k in p_dict.keys()])
-    def update_plot(attrname, old, new):
-        sport = sport_select.value
-        p = figure(x_range=[str(k) for k in bettype_number.keys()], plot_height=350, title="Tip stave na šport: " + str(sport_id),
-               toolbar_location="right", )
-        p.vbar(x=[str(k) for k in bettype_number.keys()],top=list(bettype_number.values()), width=0.9)
-    #city_select.on_change('value', update_plot)
+    sport_select = Select(value=str(sports[sport_id]), title='Sport id', options=[str(sports[k]) for k in p_dict.keys()])
     controls = column(sport_select)
     show(row(p, controls))
 
@@ -403,9 +426,9 @@ def visualize_overall_results():
 if __name__ == '__main__':
     #cursor = connect()
     mongo_client = connect_mongo()
-#    visualize_overall_results()
-  #  visualize_day_profit()
-    #visualize_sports_bets()
+    visualize_overall_results()
+    visualize_day_profit()
+    visualize_sports_bets()
     visualize_sport_type(27)
 
 
