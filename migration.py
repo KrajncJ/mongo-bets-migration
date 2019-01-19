@@ -330,11 +330,17 @@ def get_days_profit_dict():
 
 def visualize_day_profit():
     p_dict = get_days_profit_dict()
+    avg=0
+    profit_avg = {}
+    for k,v in p_dict.items():
+        avg = avg + v
+        profit_avg[k] = avg
     output_file("days_profits.html")
     date_time_days = [datetime.strptime(k, '%m-%d-%Y') for k in p_dict.keys()]
     p = figure(x_axis_type='datetime', plot_height=550, plot_width=950, title="Dobiček na posamezen dan",
                toolbar_location="right", )
     p.vbar(x=date_time_days, top=list(p_dict.values()), width=3)
+    p.circle(x=date_time_days, y=list(profit_avg.values()), size=1, color="red", alpha=1)
     p.xgrid.grid_line_color = None
     p.y_range.start = -100
     show(p)
