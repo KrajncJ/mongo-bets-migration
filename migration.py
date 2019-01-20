@@ -36,7 +36,7 @@ sports = {
         16:'Pikado',
         26:'Snooker',
         23:'Pesäpallo',
-        18:'Hokej',
+        18:'Hokej I',
         17:'e-sports',
         14:'Boks',
         22: 'UFC'
@@ -366,7 +366,7 @@ def visualize_day_profit():
     p = figure(x_axis_type='datetime', plot_height=550, plot_width=950, title="Dobiček na posamezen dan",
                toolbar_location="right", )
     p.vbar(x=date_time_days, top=list(p_dict.values()), width=3)
-    p.circle(x=date_time_days, y=list(profit_avg.values()), size=1, color="red", alpha=1)
+  #  p.circle(x=date_time_days, y=list(profit_avg.values()), size=1, color="red", alpha=1)
   #  p.line(list(profit_avg.keys()), list(profit_avg.values()),line_width=2)
     p.xgrid.grid_line_color = None
     p.y_range.start = -100
@@ -380,7 +380,11 @@ def get_sport_type_bets():
     joined_bet_match_league_type = mongo_client.bets.aggregate(query)
     dict_sport = {}
     count = 0
+    continued = 0
     for row in joined_bet_match_league_type:
+        if (len(row['bet_type']) < 1 or (len(row["Liga"]) < 1)):
+            continued += 1
+            continue
         count += 1
         if (count % 2000 == 0):
             print(count)
@@ -394,6 +398,7 @@ def get_sport_type_bets():
                 dict_sport[sport_id][type] = 1
             else:
                 dict_sport[sport_id][type] = dict_sport[sport_id][type] + 1
+    print('continued: '+ str(continued))
     return  dict_sport
     #for k,v in dict_sport.items():
     #    print(str(k) + " : " + str(v))
@@ -460,9 +465,9 @@ if __name__ == '__main__':
     #cursor = connect()
     mongo_client = connect_mongo()
     #visualize_overall_results()
-    visualize_day_profit()
+    #visualize_day_profit()
     #visualize_sports_bets()
-    #visualize_sport_type(27)
+    visualize_sport_type(27)
 
 
 
