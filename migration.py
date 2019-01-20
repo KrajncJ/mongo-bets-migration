@@ -236,6 +236,7 @@ def get_option_map(mongo_client):
     return option_map_id
 
 
+
 def get_type_map(mongo_client):
     # holding option map
     option_map_id = {}
@@ -313,6 +314,9 @@ def get_days_profit_dict():
         count += 1
         if (count % 2000 == 0):
             print(count)
+        if count == 150000:
+            break
+        #remove this only used for testing
         status = row["Status"]
         quota  = row["PickedQuota"]
         bet_date = str(row['match'][0]['Date'])
@@ -328,20 +332,38 @@ def get_days_profit_dict():
             dict_day_profit[key_date] = dict_day_profit[key_date] + (quota*single_bet_investment)-single_bet_investment if status == "W" else dict_day_profit[key_date] - single_bet_investment
     return dict_day_profit
 
+import time
+
+def sortableDate(d1, d2):
+    time.strptime(d1,'%m-%d-%y') < time.strptime(d2,'%m-%d-%y')
+
 def visualize_day_profit():
     p_dict = get_days_profit_dict()
     avg=0
     profit_avg = {}
+    toupleArr = []
     for k,v in p_dict.items():
+        toupleArr.append((k,v))
+
+    print(toupleArr[0])
+
+    all_date_keys = list(p_dict.keys())
+    all_date_keys.sort(key=lambda x: time.mktime(time.strptime(x, "%m-%d-%Y")))
+
+    for k  in all_date_keys:
+        v = p_dict[k]
+        print('key is: '+ str(k)+ ' val '+ str(v))
+        # time.sleep(0.5) used to log
         avg = avg + v
+        print('current avg: ' + str(avg))
         profit_avg[k] = avg
     output_file("days_profits.html")
     date_time_days = [datetime.strptime(k, '%m-%d-%Y') for k in p_dict.keys()]
     p = figure(x_axis_type='datetime', plot_height=550, plot_width=950, title="Dobiček na posamezen dan",
                toolbar_location="right", )
     p.vbar(x=date_time_days, top=list(p_dict.values()), width=3)
-    p.line(x=date_time_days, y=list(profit_avg.values()), line_width=1, color="green", alpha=0.6)
-    p.circle(x=date_time_days, y=list(profit_avg.values()), size=2, color="red", alpha=1)
+    #p.circle(x=date_time_days, y=list(profit_avg.values()), size=1, color="red", alpha=1)
+    p.line(list(profit_avg.keys()), list(profit_avg.values()),line_width=2)
     p.xgrid.grid_line_color = None
     p.y_range.start = -100
     show(p)
@@ -433,10 +455,10 @@ def visualize_overall_results():
 if __name__ == '__main__':
     #cursor = connect()
     mongo_client = connect_mongo()
-    visualize_overall_results()
+    #visualize_overall_results()
     visualize_day_profit()
-    visualize_sports_bets()
-    visualize_sport_type(27)
+    #visualize_sports_bets()
+    #visualize_sport_type(27)
 
 
 
