@@ -340,7 +340,8 @@ def visualize_day_profit():
     p = figure(x_axis_type='datetime', plot_height=550, plot_width=950, title="Dobiček na posamezen dan",
                toolbar_location="right", )
     p.vbar(x=date_time_days, top=list(p_dict.values()), width=3)
-    p.circle(x=date_time_days, y=list(profit_avg.values()), size=1, color="red", alpha=1)
+    p.line(x=date_time_days, y=list(profit_avg.values()), line_width=1, color="green", alpha=0.6)
+    p.circle(x=date_time_days, y=list(profit_avg.values()), size=2, color="red", alpha=1)
     p.xgrid.grid_line_color = None
     p.y_range.start = -100
     show(p)
